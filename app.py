@@ -1,14 +1,10 @@
 from flask import Flask, request, jsonify, render_template
 import requests
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 app = Flask(__name__, template_folder="templates")
 
-# DeepSeek API Configuration
-DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+# DeepSeek API Configuration - Your key added directly
+DEEPSEEK_API_KEY = "sk-0ed02937d6d34b9e88bb561759b02cec"
 
 def get_deepseek_response(user_input):
     headers = {
@@ -39,10 +35,10 @@ def get_deepseek_response(user_input):
             data = response.json()
             return data['choices'][0]['message']['content']
         else:
-            return "Oops! I'm having trouble thinking right now. Try again sweetie! 💕"
+            return f"Oops! I'm having trouble thinking right now. (Error: {response.status_code})"
             
     except Exception as e:
-        return "Hey there! I'm currently taking a little break. Can you try again in a moment? 💕"
+        return f"Hey there! I'm currently taking a little break. Error: {str(e)}"
 
 @app.route("/")
 def home():
