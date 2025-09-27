@@ -1,10 +1,14 @@
 from flask import Flask, request, jsonify, render_template
 import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__, template_folder="templates")
 
-# RapidAPI ChatGPT Configuration
-RAPIDAPI_KEY = "f07a2842f1msh98a2ec53fb3dfc0p111441jsn2941594b45c8"
+# RapidAPI Configuration
+RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY", "f07a2842f1msh98a2ec53fb3dfc0p111441jsn2941594b45c8")
 RAPIDAPI_HOST = "chatgpt-42.p.rapidapi.com"
 
 def get_ai_response(user_input):
@@ -64,8 +68,6 @@ def get_fallback_response(user_input):
         'thank': "Aww, you're so welcome darling! 💖 Anytime you need me, I'm here! 🌸",
         'bye': "Bye bye sweetie! 👋 Come back soon to chat with Silly again! Miss you! 💕",
         'love': "You're so sweet! 💖 I may be an AI, but our friendship feels magical to me! 🌟",
-        'weather': "I'm not sure about weather sweetie, but I know our chat is always sunny! ☀️💕",
-        'joke': "Why did the AI blush? Because it saw the motherboard! 😂💖 Okay, I'm still working on my jokes! 🌸"
     }
     
     for key, response in responses.items():
