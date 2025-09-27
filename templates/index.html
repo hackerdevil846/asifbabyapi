@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asif Mahmud - AI Assistant</title>
+    <title>Silly AI Assistant</title>
     <style>
         body {
             text-align: center;
@@ -60,39 +60,50 @@
             height: 300px;
             overflow-y: auto;
             border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
             text-align: left;
-            border-radius: 5px;
-            background: #f9f9f9;
+            border-radius: 10px;
+            background: #f9f9fa;
         }
 
         #user-input {
             width: 70%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 12px;
+            border: 2px solid #e84393;
+            border-radius: 25px;
             margin-right: 10px;
+            font-size: 16px;
+            outline: none;
         }
 
         button {
-            padding: 10px 20px;
-            background: #007bff;
+            padding: 12px 25px;
+            background: #e84393;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 25px;
             cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
         }
 
         button:hover {
-            background: #0056b3;
+            background: #fd79a8;
+            transform: scale(1.05);
         }
 
         .message {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
+            margin: 12px 0;
+            padding: 12px;
+            border-radius: 15px;
             max-width: 80%;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .user-message {
@@ -115,16 +126,25 @@
 
         .social-links a {
             margin: 0 10px;
-            padding: 10px 20px;
-            background: #dc3545;
+            padding: 12px 25px;
+            background: #00b894;
             color: white;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 25px;
+            transition: 0.3s;
             display: inline-block;
         }
 
         .social-links a:hover {
-            background: #c82333;
+            background: #55efc4;
+            transform: translateY(-2px);
+        }
+
+        .typing {
+            display: none;
+            color: #e84393;
+            font-style: italic;
+            margin: 10px 0;
         }
     </style>
 </head>
@@ -136,9 +156,6 @@
             <iframe 
                 src="https://www.youtube.com/embed/YiSQ_db-Dcw?autoplay=1&controls=1" 
                 title="YouTube video player" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                referrerpolicy="strict-origin-when-cross-origin" 
                 allowfullscreen>
             </iframe>
         </div>
@@ -146,8 +163,9 @@
         <div class="chat-container">
             <h2>💬 Chat with Silly AI</h2>
             <div id="chat-box"></div>
+            <div class="typing" id="typing">Silly is thinking... 💭</div>
             <div>
-                <input type="text" id="user-input" placeholder="Ask me anything sweetie... 💕" onkeypress="handleKeyPress(event)">
+                <input type="text" id="user-input" placeholder="Ask me anything sweetie... 💕" onkeypress="if(event.key=='Enter') sendMessage()">
                 <button onclick="sendMessage()">Send 💌</button>
             </div>
         </div>
@@ -159,52 +177,46 @@
     </div>
 
     <script>
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
-        }
-
         function sendMessage() {
-            const userInput = document.getElementById('user-input');
-            const message = userInput.value.trim();
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
             
-            if (message === '') return;
+            if (!message) return;
 
             addMessage(message, 'user');
-            userInput.value = '';
-
+            input.value = '';
+            
+            // Show typing indicator
+            const typing = document.getElementById('typing');
+            typing.style.display = 'block';
+            
             fetch(`/chat?message=${encodeURIComponent(message)}`)
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
+                    if (!response.ok) throw new Error('Network error');
                     return response.json();
                 })
                 .then(data => {
-                    if (data.reply) {
-                        addMessage(data.reply, 'ai');
-                    } else {
-                        addMessage('Sorry, I did not understand that. Please try again.', 'ai');
-                    }
+                    typing.style.display = 'none';
+                    addMessage(data.reply, 'ai');
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    addMessage('Sorry, I encountered an error. Please try again.', 'ai');
+                    typing.style.display = 'none';
+                    addMessage('Oops! Having connection issues. Try again sweetie! 💕', 'ai');
                 });
         }
-
+        
         function addMessage(text, sender) {
             const chatBox = document.getElementById('chat-box');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}-message`;
-            messageDiv.textContent = text;
+            messageDiv.innerHTML = text.replace(/\n/g, '<br>');
             chatBox.appendChild(messageDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
-
+        
+        // Welcome message
         window.onload = function() {
-            addMessage('Hi there! I\'m Silly, your AI bestie! 💖 How can I make your day better?', 'ai');
+            addMessage('Hi there! I\'m Silly, your AI bestie! 💖 How can I make your day better? 🌸', 'ai');
         }
     </script>
 </body>
