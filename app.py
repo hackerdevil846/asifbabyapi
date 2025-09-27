@@ -7,54 +7,56 @@ load_dotenv()
 
 app = Flask(__name__, template_folder="templates")
 
-# Gemini API Key
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyCkgmBbGJC1UGIOmyFXesPMsqrHyZvbhqc")
+# DeepSeek API Configuration
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
 
-def get_gemini_response(user_input):
-    # Use the correct model name - gemini-pro is deprecated for this API
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+def get_deepseek_response(user_input):
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {DEEPSEEK_API_KEY}"
+    }
     
-    headers = {"Content-Type": "application/json"}
-
     payload = {
-        "contents": [
+        "model": "deepseek-chat",
+        "messages": [
             {
-                "parts": [{"text": user_input}]
+                "role": "system", 
+                "content": "Your name is silly. You are a friendly AI assistant. You have knowledge about everything. Answer questions clearly and provide fun examples when needed. Don't give unnecessary information - just answer what is asked. Keep replies short (1-2 lines, max 50 words). Act like a female friend - be fun and loving. No bracket replies."
+            },
+            {
+                "role": "user",
+                "content": user_input
             }
-        ]
+        ],
+        "stream": False
     }
 
     try:
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post("https://api.deepseek.com/v1/chat/completions", 
+                               headers=headers, json=payload, timeout=30)
         
         if response.status_code == 200:
             data = response.json()
-            if 'candidates' in data and len(data['candidates']) > 0:
-                return data['candidates'][0]['content']['parts'][0]['text']
-            else:
-                return "I apologize, but I didn't receive a proper response. Could you please try again?"
+            return data['choices'][0]['message']['content']
         else:
-            return f"I apologize, but I'm currently unable to process your request. (Error: {response.status_code})"
+            return "Oops! I'm having trouble thinking right now. Try again sweetie! 💕"
+            
     except Exception as e:
-        return "I apologize, but I'm experiencing technical difficulties. Please try again later."
+        return "Hey there! I'm currently taking a little break. Can you try again in a moment? 💕"
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
-@app.route("/chat", methods=["GET", "POST"])
+@app.route("/chat", methods=["GET"])
 def chat():
-    if request.method == "GET":
-        user_message = request.args.get("message")
-    else:
-        user_message = request.json.get("message")
+    user_message = request.args.get("message")
     
     if not user_message:
         return jsonify({"error": "No message provided"}), 400
 
-    response_text = get_gemini_response(user_message)
-    
+    response_text = get_deepseek_response(user_message)
     return jsonify({"reply": response_text})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
