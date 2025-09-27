@@ -96,13 +96,15 @@
         }
 
         .user-message {
-            background: #e3f2fd;
+            background: #e84393;
+            color: white;
             margin-left: auto;
             text-align: right;
         }
 
         .ai-message {
-            background: #f5f5f5;
+            background: #74b9ff;
+            color: white;
             margin-right: auto;
             text-align: left;
         }
@@ -132,7 +134,7 @@
 
         <div class="video-container">
             <iframe 
-                src="https://www.youtube.com/embed/YiSQ_db-Dcw?autoplay=1&mute=1&controls=0" 
+                src="https://www.youtube.com/embed/YiSQ_db-Dcw?autoplay=1&controls=1" 
                 title="YouTube video player" 
                 frameborder="0" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
@@ -142,11 +144,11 @@
         </div>
 
         <div class="chat-container">
-            <h2>💬 Chat with AI Assistant</h2>
+            <h2>💬 Chat with Silly AI</h2>
             <div id="chat-box"></div>
             <div>
-                <input type="text" id="user-input" placeholder="Type your message here..." onkeypress="handleKeyPress(event)">
-                <button onclick="sendMessage()">Send</button>
+                <input type="text" id="user-input" placeholder="Ask me anything sweetie... 💕" onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()">Send 💌</button>
             </div>
         </div>
 
@@ -169,11 +171,9 @@
             
             if (message === '') return;
 
-            // Add user message to chat
             addMessage(message, 'user');
             userInput.value = '';
 
-            // Get AI response
             fetch(`/chat?message=${encodeURIComponent(message)}`)
                 .then(response => {
                     if (!response.ok) {
@@ -203,9 +203,8 @@
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        // Add welcome message
         window.onload = function() {
-            addMessage('Hello! I am an AI assistant for Asif Mahmud. How can I help you today?', 'ai');
+            addMessage('Hi there! I\'m Silly, your AI bestie! 💖 How can I make your day better?', 'ai');
         }
     </script>
 </body>
