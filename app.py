@@ -73,7 +73,7 @@ def get_fallback_response(user_input):
 
 @app.route("/")
 def home():
-    # HTML directly in the code - no templates folder needed
+    # HTML directly in the code - NO templates folder needed
     return """
     <!DOCTYPE html>
     <html lang="en">
@@ -90,31 +90,104 @@ def home():
                 padding: 20px;
             }
             @keyframes changeBg {
-                0% { background-color: #ff5757; } 25% { background-color: #ff9f43; }
-                50% { background-color: #f5cd79; } 75% { background-color: #55efc4; }
+                0% { background-color: #ff5757; }
+                25% { background-color: #ff9f43; }
+                50% { background-color: #f5cd79; }
+                75% { background-color: #55efc4; }
                 100% { background-color: #74b9ff; }
             }
-            h1 { color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
-            .container { max-width: 1200px; margin: 0 auto; }
-            .video-container { margin: 20px auto; max-width: 800px; }
-            iframe { width: 100%; height: 450px; border: none; border-radius: 10px; }
-            .chat-container { background: white; border-radius: 10px; padding: 20px; max-width: 800px; margin: 20px auto; }
-            #chat-box { height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; text-align: left; }
-            #user-input { width: 70%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-right: 10px; }
-            button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
-            .message { margin: 10px 0; padding: 10px; border-radius: 5px; max-width: 80%; }
-            .user-message { background: #e84393; color: white; margin-left: auto; text-align: right; }
-            .ai-message { background: #74b9ff; color: white; margin-right: auto; text-align: left; }
-            .social-links a { margin: 0 10px; padding: 10px 20px; background: #dc3545; color: white; text-decoration: none; border-radius: 5px; }
+            h1 {
+                color: white;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            }
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            .video-container {
+                margin: 20px auto;
+                max-width: 800px;
+            }
+            iframe {
+                width: 100%;
+                height: 450px;
+                border: none;
+                border-radius: 10px;
+            }
+            .chat-container {
+                background: white;
+                border-radius: 10px;
+                padding: 20px;
+                max-width: 800px;
+                margin: 20px auto;
+            }
+            #chat-box {
+                height: 300px;
+                overflow-y: auto;
+                border: 1px solid #ddd;
+                padding: 10px;
+                margin-bottom: 10px;
+                text-align: left;
+            }
+            #user-input {
+                width: 70%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                margin-right: 10px;
+            }
+            button {
+                padding: 10px 20px;
+                background: #007bff;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            .message {
+                margin: 10px 0;
+                padding: 10px;
+                border-radius: 5px;
+                max-width: 80%;
+            }
+            .user-message {
+                background: #e84393;
+                color: white;
+                margin-left: auto;
+                text-align: right;
+            }
+            .ai-message {
+                background: #74b9ff;
+                color: white;
+                margin-right: auto;
+                text-align: left;
+            }
+            .social-links {
+                margin-top: 20px;
+            }
+            .social-links a {
+                margin: 0 10px;
+                padding: 10px 20px;
+                background: #dc3545;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+                display: inline-block;
+            }
         </style>
     </head>
     <body>
         <div class="container">
             <h1>🎵 Peaceful Islamic Nasheed 🎵</h1>
+            
             <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/YiSQ_db-Dcw?autoplay=1&controls=1" 
-                        title="YouTube video player" allowfullscreen></iframe>
+                <iframe 
+                    src="https://www.youtube.com/embed/YiSQ_db-Dcw?autoplay=1&controls=1" 
+                    title="YouTube video player" 
+                    allowfullscreen>
+                </iframe>
             </div>
+            
             <div class="chat-container">
                 <h2>💬 Chat with Silly AI</h2>
                 <div id="chat-box"></div>
@@ -123,6 +196,7 @@ def home():
                     <button onclick="sendMessage()">Send 💌</button>
                 </div>
             </div>
+            
             <div class="social-links">
                 <a href="https://www.youtube.com/channel/UCwPxPdiQNcYYGNkTZ68dogQ" target="_blank">📺 YouTube</a>
                 <a href="https://www.facebook.com/share/15yVioQQyq/" target="_blank">📘 Facebook</a>
@@ -138,21 +212,26 @@ def home():
                 addMessage(message, 'user');
                 input.value = '';
                 
-                fetch(`/chat?message=${encodeURIComponent(message)}`)
-                    .then(r => r.json())
-                    .then(data => addMessage(data.reply || 'Error', 'ai'))
-                    .catch(() => addMessage('Network error. Try again sweetie! 💕', 'ai'));
+                fetch('/chat?message=' + encodeURIComponent(message))
+                    .then(response => response.json())
+                    .then(data => {
+                        addMessage(data.reply, 'ai');
+                    })
+                    .catch(error => {
+                        addMessage('Sorry, connection error! Try again sweetie! 💕', 'ai');
+                    });
             }
             
             function addMessage(text, sender) {
                 const chatBox = document.getElementById('chat-box');
-                const div = document.createElement('div');
-                div.className = `message ${sender}-message`;
-                div.textContent = text;
-                chatBox.appendChild(div);
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message ' + sender + '-message';
+                messageDiv.textContent = text;
+                chatBox.appendChild(messageDiv);
                 chatBox.scrollTop = chatBox.scrollHeight;
             }
             
+            // Welcome message
             addMessage('Hi there! I\\'m Silly, your AI bestie! 💖 How can I make your day better? 🌸', 'ai');
         </script>
     </body>
